@@ -1,10 +1,9 @@
-from keras.preprocessing import image
 import numpy as np
 import keras
-import matplotlib.pyplot as plt
 import cv2
 from tqdm import tqdm
 import os
+from tabulate import tabulate
 model=keras.models.load_model('models/dog_cat_2_10.h5')
 
 DATADIR = "test"
@@ -63,7 +62,7 @@ y = np.array(y)
 
 X=X/255 #0-255 to 0-1
 print(file_list)
-from tabulate import tabulate
+
 array=[]
 
 classes = model.predict_classes(X[0])
