@@ -133,8 +133,8 @@ else:
   pickle_out = open(images_label,"wb")
   pickle.dump(y, pickle_out)
   pickle_out.close()
-
-  np.savetxt("outputs.csv",X,delimiter=",")
+  #if you want to see what the numbers are
+  #np.savetxt("outputs.csv",X,delimiter=",")
 
 
 
@@ -142,53 +142,10 @@ if os.path.exists(os.path.join(models_folder, model_file_name)):
   model=load_model(os.path.join(models_folder, model_file_name))
 else: 
   model=create_model()
-  """
-    if K.image_data_format() == 'channels_first':
-        input_shape = (1, IMG_SIZE, IMG_SIZE)
-    else:
-        input_shape = (IMG_SIZE, IMG_SIZE, 1)
 
-    model = Sequential()
-    model.add(Conv2D(32, (3, 3), input_shape=input_shape))
-    model.add(Activation('relu'))
-    model.add(MaxPooling2D(pool_size=(2, 2)))
-
-    model.add(Conv2D(32, (3, 3)))
-    model.add(Activation('relu'))
-    model.add(MaxPooling2D(pool_size=(2, 2)))
-
-    model.add(Conv2D(64, (3, 3)))
-    model.add(Activation('relu'))
-    model.add(MaxPooling2D(pool_size=(2, 2)))
-
-    model.add(Flatten())
-    model.add(Dense(64))
-    model.add(Activation('relu'))
-    model.add(Dropout(0.5))
-    model.add(Dense(1))
-    model.add(Activation('sigmoid'))
-
-    model.compile(loss='binary_crossentropy',
-                  optimizer='rmsprop',
-                  metrics=['accuracy'])"""
-
-
-""" (x_train,y_train),(x_test,y_test)=validation_block(X,y,blocksize,block_number)
-for i in range(training_multiplier):
-  print(f"{i+1}/{training_multiplier}. training")
-
-  model.fit(x_train, y_train, validation_data=(x_test, y_test), epochs=epochs)
-  # # Use this instead of model.fit if you need more training data
-  # model.fit_generator(
-  #   train_datagen.flow(x_train, y_train, batch_size=batch_size),
-  #   validation_data=(x_test, y_test), 
-  #   steps_per_epoch=len(x_train) // batch_size,
-  #   epochs=epochs
-  #   )
-
-  model.save(os.path.join(models_folder, model_file_name)) """
 
 # # model.fit_generator() needs this. If you need more training data use this method and comment model.fit()
+
 # train_datagen = ImageDataGenerator(
 #     # rescale=1.1,
 #     # rescale=1. / 255,
