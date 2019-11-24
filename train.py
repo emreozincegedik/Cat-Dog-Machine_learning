@@ -13,16 +13,17 @@ from keras.layers import Activation, Dropout, Flatten, Dense
 from keras import backend as K
 
 IMG_SIZE=100
-batch_size=30 #image processing number at the same time
+batch_size=30 #image processing number at the same time, needed for model_fit_generator
 epochs=10 #training number
-training_multiplier=100 #train epochs*x time save model x time
+training_multiplier=100 #train epochs*x time and save model x time
 blocksize=10 #cross validation block size
-block_number=6 #cross validation block number 
+block_number=7 #cross validation block number 
 model_file='dog_cat'
 model_file_name=model_file+f'_{block_number}_{blocksize}.h5'
 images_folder="images"
 images_file="X.pickle"
 images_label="y.pickle"
+models_folder="models"
 
 def validation_block(X,y,block_size=10,validation_block_number=10):
   if validation_block_number>block_size or validation_block_number<1:
@@ -104,8 +105,8 @@ else:
 
 
 
-if os.path.exists(model_file_name):
-  model=load_model(model_file_name)
+if os.path.exists(os.path.join(models_folder, model_file_name)):
+  model=load_model(os.path.join(models_folder, model_file_name))
 else:
   if K.image_data_format() == 'channels_first':
       input_shape = (1, IMG_SIZE, IMG_SIZE)
@@ -136,21 +137,23 @@ else:
                 optimizer='rmsprop',
                 metrics=['accuracy'])
 
-train_datagen = ImageDataGenerator(
-    # rescale=1.1,
-    # rescale=1. / 255,
-    shear_range=0.2,
-    zoom_range=0.2,
-    horizontal_flip=True,
-    rotation_range=20,
-    width_shift_range=0.2,
-    height_shift_range=0.2)
+# # model.fit_generator() needs this. If you need more training data use this method and comment model.fit()
+# train_datagen = ImageDataGenerator(
+#     # rescale=1.1,
+#     # rescale=1. / 255,
+#     shear_range=0.2,
+#     zoom_range=0.2,
+#     horizontal_flip=True,
+#     rotation_range=20,
+#     width_shift_range=0.2,
+#     height_shift_range=0.2)
   
 (x_train,y_train),(x_test,y_test)=validation_block(X,y,blocksize,block_number)
-# model.fit(x_train,y_train,epochs=epochs)
 for i in range(training_multiplier):
   print(f"{i+1}/{training_multiplier}. training")
+
   model.fit(x_train, y_train, validation_data=(x_test, y_test), epochs=epochs)
+  # # Use this instead of model.fit if you need more training data
   # model.fit_generator(
   #   train_datagen.flow(x_train, y_train, batch_size=batch_size),
   #   validation_data=(x_test, y_test), 
@@ -158,4 +161,4 @@ for i in range(training_multiplier):
   #   epochs=epochs
   #   )
 
-  model.save(model_file_name)
+  model.save(os.path.join(models_folder, model_file_name))
