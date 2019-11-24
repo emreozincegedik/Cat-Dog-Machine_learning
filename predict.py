@@ -7,11 +7,27 @@ from tqdm import tqdm
 import os
 model=keras.models.load_model('models/dog_cat_2_10.h5')
 
-IMG_SIZE=100
 DATADIR = "test"
 
 CATEGORIES = ["Dog", "Cat"]
+IMG_SIZE=100
 
+"""
+# # Single prediction
+img = cv2.imread("test/download.jfif",cv2.IMREAD_GRAYSCALE)
+img = cv2.resize(img,(100,100))
+img = np.reshape(img,[1,100,100,1])
+
+classes = model.predict_classes(img)
+
+if classes[0][0]==1:
+  print("cat")
+else:
+  print("dog")"""
+
+
+
+###########################
 def create_testing_data():
     for category in CATEGORIES:  # dogs cats
 
@@ -29,6 +45,7 @@ def create_testing_data():
             #    print("OSErrroBad img most likely", e, os.path.join(path,img))
             #except Exception as e:
             #    print("general exception", e, os.path.join(path,img))
+
 
 training_data = []
 
@@ -58,7 +75,6 @@ for i in range(len(file_list)):
   else:
     prediction="dog"
   array.append([prediction,y[i],file_list[i]])
-  
 print(tabulate(array, headers=['prediction', 'reality','file name']))
 
 
