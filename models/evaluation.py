@@ -34,12 +34,19 @@ def validation_block(X,y,block_size=10,validation_block_number=10):
 
   return ((x_train, y_train),(x_test,y_test))
 
+try:
+  pickle_in = open("X.pickle","rb")
+  X = pickle.load(pickle_in)
 
-pickle_in = open("../X.pickle","rb")
-X = pickle.load(pickle_in)
+  pickle_in = open("y.pickle","rb")
+  y = pickle.load(pickle_in)
+except:
+  pickle_in = open("../X.pickle","rb")
+  X = pickle.load(pickle_in)
 
-pickle_in = open("../y.pickle","rb")
-y = pickle.load(pickle_in)
+  pickle_in = open("../y.pickle","rb")
+  y = pickle.load(pickle_in)
+
 
 
 evaluation=[["loss", "accuracy"]]
