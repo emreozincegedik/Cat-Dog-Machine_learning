@@ -1,16 +1,11 @@
 import numpy as np
-import matplotlib.pyplot as plt
-import os
-import sys
 import cv2
 from tqdm import tqdm
-import random
+import sys
 import pickle
-from keras.preprocessing.image import ImageDataGenerator
 from keras.models import Sequential, load_model
-from keras.layers import Conv2D, MaxPooling2D
-from keras.layers import Activation, Dropout, Flatten, Dense
 from keras import backend as K
+from tabulate import tabulate
 model_name="dog_cat"
 block_size=10
 
@@ -49,9 +44,10 @@ except:
 
 
 
-evaluation=[["loss", "accuracy"]]
-for i in range(7):
+evaluation=[]
+for i in range(block_size):
   (x_train, y_train), (x_test,y_test)=validation_block(X,y,block_size,(i+1))
   model=load_model(f"{model_name}_{i+1}_{block_size}.h5")
   evaluation.append(model.evaluate(x_test,y_test))
-print(evaluation)
+  evaluation[i].append(f"{model_name}_{i+1}_{block_size}.h5")
+print(tabulate(evaluation, headers=['loss','accuracy', 'model name']))
