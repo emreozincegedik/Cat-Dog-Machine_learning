@@ -48,7 +48,6 @@ if predict_all:
   y = np.array(y)
 
   X=X/255 #0-255 to 0-1
-  print(file_list)
 
   print_table=[]
 
