@@ -22,8 +22,8 @@ block_number=10 #cross validation block number
 model_file='dog_cat'
 model_file_name=model_file+f'_{block_number}_{blocksize}.h5'
 images_folder="images"
-images_file="X.pickle"
-images_label="y.pickle"
+images_file="X.pickle" # for loading images as arrays faster
+images_label="y.pickle" # for loading images' labels as arrays faster
 models_folder="models"
 training_categories= ["Dog", "Cat"] # must be the training images folder names
 
@@ -33,15 +33,19 @@ def validation_block(X,y,block_size=10,validation_block_number=10):
   if block_size<2:
     sys.exit("block size has to be greater than 1")
 
+  # defining block's place
   train_block_divider=int(int(len(X))*(1/block_size))
   train_block=int(train_block_divider*(validation_block_number-1))
   train_block_end=int(train_block_divider*(validation_block_number))
 
+  # block's index
   temp=np.arange(train_block,train_block_end)
 
+  # remove block from main images array for train, block for testing
   x_train=np.delete(X,temp,0)
   x_test=X[train_block:train_block_end]
 
+  # same for labels
   y_train=np.delete(y,temp,0)
   y_test=y[train_block:train_block_end]
 
@@ -51,7 +55,7 @@ def create_training_data():
     for category in CATEGORIES:  # dogs cats
 
         path = os.path.join(DATADIR,category)  # create path to dogs and cats
-        class_num = CATEGORIES.index(category)  # get the classification  (0 or a 1). 0=dog 1=flower
+        class_num = CATEGORIES.index(category)  # get the classification  (0 or a 1). 0=dog 1=cat
 
         for img in tqdm(os.listdir(path)):  # iterate over each image per dogs and cats
             try:
@@ -98,9 +102,10 @@ def create_model():
   return model
 
 if os.path.exists(images_file) and os.path.exists(images_label):
+  # load images as arrays if they exist as .pickle
   pickle_in = open(images_file,"rb")
   X = pickle.load(pickle_in)
-
+  # load images' labels
   pickle_in = open(images_label,"rb")
   y = pickle.load(pickle_in)
 else:
@@ -110,7 +115,7 @@ else:
 
   training_data = []
 
-  create_training_data()
+  create_training_data() # images folder gets converted to array and appends to training_data
 
   random.shuffle(training_data)
 
@@ -121,15 +126,17 @@ else:
       X.append(features)
       y.append(label)
 
-  X = np.array(X).reshape(-1, IMG_SIZE, IMG_SIZE, 1)
-  y = np.array(y)
+  X = np.array(X).reshape(-1, IMG_SIZE, IMG_SIZE, 1) # -1 means any number for images, training model needs this shape 
+  y = np.array(y) # model also needs arrays as numpy arrays
 
-  X=X/255 #0-255 to 0-1
+  X=X/255 #change pixel data from 0-255 to 0-1
 
+  # save arrays for later
   pickle_out = open(images_file,"wb")
   pickle.dump(X, pickle_out)
   pickle_out.close()
 
+  
   pickle_out = open(images_label,"wb")
   pickle.dump(y, pickle_out)
   pickle_out.close()
@@ -157,13 +164,12 @@ else:
 #     height_shift_range=0.2)
 
 if train_all_blocks_at_same_time:
-  evaluations=[]
   for i in range(blocksize):
     print(f"Training {i+1}. block of {blocksize} blocks")
 
-    (x_train,y_train),(x_test,y_test)=validation_block(X,y,(i+1),block_number)
-    model=create_model()
-    model.fit(x_train, y_train, validation_data=(x_test, y_test), epochs=epochs)
+    (x_train,y_train),(x_test,y_test)=validation_block(X,y,(i+1),block_number) # get current block
+    model=create_model() # remake model for new block
+    model.fit(x_train, y_train, validation_data=(x_test, y_test), epochs=epochs) #train and test for 'epochs' times
     # # Use this instead of model.fit if you need more training data
     # model.fit_generator(
     #   train_datagen.flow(x_train, y_train, batch_size=batch_size),
@@ -171,18 +177,18 @@ if train_all_blocks_at_same_time:
     #   steps_per_epoch=len(x_train) // batch_size,
     #   epochs=epochs
     #   ) 
-    model.save(os.path.join(models_folder, model_file_name))
+    model.save(os.path.join(models_folder, model_file_name)) #save model for training later
 else:
-  (x_train,y_train),(x_test,y_test)=validation_block(X,y,blocksize,block_number)
-  for i in range(training_multiplier):
+  (x_train,y_train),(x_test,y_test)=validation_block(X,y,blocksize,block_number) # create block's training and testing data
+  for i in range(training_multiplier): #train and save for 'training_multiplier' times
     print(f"{i+1}/{training_multiplier}. training of {block_number}. block")
 
-    model.fit(x_train, y_train, validation_data=(x_test, y_test), epochs=epochs)
-    # # Use this instead of model.fit if you need more training data
+    model.fit(x_train, y_train, validation_data=(x_test, y_test), epochs=epochs) # train for additional 'epochs' times
+    # # Use this instead of model.fit() if you need more training data
     # model.fit_generator(
     #   train_datagen.flow(x_train, y_train, batch_size=batch_size),
     #   validation_data=(x_test, y_test), 
     #   steps_per_epoch=len(x_train) // batch_size,
     #   epochs=epochs
     #   ) 
-    model.save(os.path.join(models_folder, model_file_name))
+    model.save(os.path.join(models_folder, model_file_name)) # save model for training later

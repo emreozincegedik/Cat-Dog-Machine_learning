@@ -2,7 +2,8 @@ import numpy as np
 import os
 import cv2
 import threading
-
+# this is not optimized for training
+# also it is not complete
 class Neural_Network(object):
   def __init__(self):
     #parameters
