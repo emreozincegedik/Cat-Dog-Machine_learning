@@ -9,15 +9,15 @@ predict_single_file_name="test/Dog/a (1).jfif" # not needed if predict_all = Tru
 
 model=keras.models.load_model('models/dog_cat_2_10.h5')
 
-DATADIR = "test"
+test_image_directory = "test"
 
-CATEGORIES = ["Dog", "Cat"]
-IMG_SIZE=100
+CATEGORIES = ["Dog", "Cat", "Random"] 
+IMG_SIZE=100 # change this according to training model
 
 def create_testing_data():
     for category in CATEGORIES:  # dogs cats
 
-        path = os.path.join(DATADIR,category)  # create path to dogs and cats
+        path = os.path.join(test_image_directory,category)  # create path to dogs and cats
 
         for img in tqdm(os.listdir(path)):  # iterate over each image per dogs and cats
             try:
@@ -32,18 +32,6 @@ def create_testing_data():
             #except Exception as e:
             #    print("general exception", e, os.path.join(path,img))
 
-
-
-
-
-
-"""
-# # Single prediction
-"""
-
-
-
-###########################
 if predict_all:
   training_data = []
 
